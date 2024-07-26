@@ -1,18 +1,28 @@
-import express from 'express'
+import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv'
-import { dot } from 'node:test/reporters';
+import dotenv from 'dotenv';
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 
 dotenv.config();
-mongoose.connect(process.env.MONGO_URI)
-.then(()=>{
-    console.log('Database connected')
-}).catch(err =>{
-    console.log(err)
+
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 3000;
+
+
+mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 50000 })
+  .then(() => {
+    console.log('Database connected');
+  })
+  .catch(err => {
+    console.error('Database connection error:', err);
+  });
+
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-const app =express();
-
-app.listen(3000,()=>{
-    console.log('server is running on port 3000');
-})
